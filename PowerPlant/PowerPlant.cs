@@ -70,12 +70,12 @@ namespace PowerPlant
         public int RPMmod(int throttle,int fwWeight,int powerAtRpm,int revLimit,int idle) 
         {
            
-            int RPMrise = (throttle*90) / fwWeight;
+            int RPMrise = ((throttle *2)*powerAtRpm) / fwWeight;
 
             int MagicNum = 3;
             if (RPM > 1500)
             {
-                MagicNum = 1;
+                MagicNum = 2;
 
             }
             if (RPM < 1500)
@@ -86,6 +86,7 @@ namespace PowerPlant
             {
                 MagicNum = 25;
             }
+
             int RPMfall = (RPM / fwWeight)/MagicNum;
             //Debug.WriteLine("RPMRISE{0}", RPMrise);
 
@@ -100,7 +101,7 @@ namespace PowerPlant
             //Debug.WriteLine("RPMfall{0}", RPMfall);
 
            
-            if (RPM < revLimit) 
+            if (RPM < revLimit && RPM + RPMrise < revLimit+250) 
             {
                 RPM = RPM + RPMrise;
             }
@@ -108,6 +109,8 @@ namespace PowerPlant
             {
                 RPM = RPM - 10;
             }
+          
+
 
             if (RPM > idle)
             {
