@@ -18,6 +18,8 @@ namespace PowerPlant
         public string[] parArray = new string[10];
         int RPM = 950;
 
+        int MaxGear;
+
 
         public int ReadPower(int RPM)
         {
@@ -43,15 +45,15 @@ namespace PowerPlant
             sRead.Close();
             return currentPower;
         }
-        public List<int> ReadPara()
+        public List<float> ReadPara()
         {
-            List<int> carPars = new List<int>();
+            List<float> carPars = new List<float>();
             StreamReader sRead = new StreamReader("C:/Users/Jakub/source/repos/PowerPlant/PowerPlant/Content/98SupraParameters.txt");
             do
             {
                 line = sRead.ReadLine();
                 parArray = line.Split(':');
-                carPars.Add(int.Parse(parArray[1]));
+                carPars.Add(float.Parse(parArray[1]));
             }
             while (!sRead.EndOfStream);
             sRead.Close();
@@ -67,16 +69,23 @@ namespace PowerPlant
             //Debug.WriteLine(powerAtRpm);
             return powerAtRpm;
         }
-        public int RPMmod(int throttle,int fwWeight,int powerAtRpm,int revLimit,int idle) 
+        public int RPMmod(int throttle,int fwWeight,int powerAtRpm,int revLimit,int idle,int transmissionLoad) 
         {
-           
-            int RPMrise = ((throttle *2)*powerAtRpm) / fwWeight;
-
+            int maxRpmR = (powerAtRpm/12) * fwWeight;
+            int RPMrise = ((throttle)*powerAtRpm) / fwWeight;
+            if (RPMrise > maxRpmR) 
+            {
+                RPMrise = maxRpmR;
+            }
             int MagicNum = 3;
             if (RPM > 1500)
             {
                 MagicNum = 2;
 
+            }
+            if (RPM < 4000) 
+            {
+                MagicNum = 3;
             }
             if (RPM < 1500)
             {
@@ -118,8 +127,21 @@ namespace PowerPlant
             }
 
 
-            Debug.WriteLine(RPM);
+            //Debug.WriteLine(RPM);
                 return RPM;
+        }
+        public int gearSelect()
+        {
+            List<float> carPars = ReadPara();
+            
+          
+            Debug.WriteLine(MaxGear);
+            return MaxGear; 
+        }
+        public float Transmission() 
+        {
+
+            return 1;
         }
         public void DrawMessage(SpriteBatch spriteBatch,SpriteFont Font, int PARA,Vector2 pos)
         {

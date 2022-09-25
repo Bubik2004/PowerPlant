@@ -1,0 +1,3 @@
+FlywheelWeight:23
+RevLimiter:8000
+idle:950

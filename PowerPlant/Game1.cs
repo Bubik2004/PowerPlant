@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using System.Collections.Generic;
+
 namespace PowerPlant
 {
     public class Game1 : Game
@@ -11,16 +12,16 @@ namespace PowerPlant
         private SpriteBatch _spriteBatch;
         private PowerPlant pPlant;
         private InputManager inputMan;
+        private Sound soundMan;
         private int RPM;
         private int throttle;
         private int cPower;
         private int flywheelWeight;
         private int revLimit;
         private int idle;
-
         private int millisecondsPerFrame = 1; //Update every 1 millisecond
         private double timeSinceLastUpdate = 0; //Accumulate the elapsed time
-
+        //private AudioEngine AudioMan;
 
         private SpriteFont Font; 
 
@@ -34,14 +35,20 @@ namespace PowerPlant
 
         protected override void Initialize()
         {
+           
             pPlant = new PowerPlant();
-            List<int> carParameters = pPlant.ReadPara();
-            flywheelWeight = carParameters[0];
-            revLimit = carParameters[1];
-            idle = carParameters[2];
+            List <float> carParameters = pPlant.ReadPara();
+            flywheelWeight = (int)carParameters[0];
+            revLimit = (int)carParameters[1];
+            idle = (int)carParameters[2];
             
             inputMan = new InputManager();
+
+            soundMan = new Sound();
+
             
+            //AudioMan = new AudioEngine();
+
             base.Initialize();
         }
 
@@ -55,13 +62,18 @@ namespace PowerPlant
 
         protected override void Update(GameTime gameTime)
         {
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            soundMan.sound();
+
+
+            pPlant.gearSelect();
             timeSinceLastUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
             if (timeSinceLastUpdate >= millisecondsPerFrame)
             {
                 throttle = inputMan.Throttle(_graphics);
-                RPM = pPlant.RPMmod(throttle, flywheelWeight, cPower, revLimit, idle);
+                RPM = pPlant.RPMmod(throttle, flywheelWeight, cPower, revLimit, idle,1);
                 cPower = pPlant.Power(RPM);
                 timeSinceLastUpdate = 0;
             }

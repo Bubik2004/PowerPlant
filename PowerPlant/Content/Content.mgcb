@@ -20,3 +20,6 @@
 /processorParam:TextureFormat=Compressed
 /build:File.spritefont
 
+#begin test.mp3
+/copy:test.mp3
+
