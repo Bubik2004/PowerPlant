@@ -10,8 +10,10 @@ namespace MfTire
         float wheelHubLongitudinalVelocity;
         float verticalLoad;
         float nominalVerticalLoad;
-        public void Initialize(float wheelAngularVelocity, float wheelHubLongitudinalForce, float verticalLoad, float nomialVerticalLoad)
+        public void Initialize()
         {
+            int WAV = 866;
+            int VL = 3831;
 
         }
         public float tireTreadLongitudinalVelocity(float WR, float WAV)

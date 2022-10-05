@@ -24,7 +24,7 @@ namespace PowerPlant
         public int ReadPower(int RPM)
         {
             int currentPower = 0;
-            StreamReader sRead = new StreamReader("C:/Users/Jakub/source/repos/PowerPlant/PowerPlant/Content/98SupraDyno.txt");
+            StreamReader sRead = new StreamReader("C:/Users/autob/Source/Repos/PowerPlant/PowerPlant/Content/98SupraDyno.txt");
             double roundRPM = Math.Round(RPM / 500.0) * 500;
 
             //Debug.WriteLine(roundRPM);
@@ -48,7 +48,7 @@ namespace PowerPlant
         public List<float> ReadPara()
         {
             List<float> carPars = new List<float>();
-            StreamReader sRead = new StreamReader("C:/Users/Jakub/source/repos/PowerPlant/PowerPlant/Content/98SupraParameters.txt");
+            StreamReader sRead = new StreamReader("C:/Users/autob/Source/Repos/PowerPlant/PowerPlant/Content/98SupraParameters.txt");
             do
             {
                 line = sRead.ReadLine();

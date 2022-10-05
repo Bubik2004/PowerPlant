@@ -43,9 +43,9 @@ namespace PowerPlant
 
             }
 
-            controller = (GamePad.GetState(PlayerIndex.One).Triggers.Right);
-            controller = controller * 100;
-            throttle = (int)controller;
+            //controller = (GamePad.GetState(PlayerIndex.One).Triggers.Right);
+            //controller = controller * 100;
+            //throttle = (int)controller;
             if (state.IsKeyDown(Keys.S))
             {
 
