@@ -11,20 +11,28 @@ using Microsoft.Xna.Framework.Input;
 
 namespace PowerPlant
 {
+
+    public struct ratioDiff 
+    {
+        public double ratio;
+        public double diff;
+    }
+
     class PowerPlant
     {
+
+        public ratioDiff thisRD = new ratioDiff();
         public string line = "";
         public string[] powerArray = new string[10];
         public string[] parArray = new string[10];
-        int RPM = 950;
-
+        double RPM = 950;
         int MaxGear;
+       
 
-
-        public int ReadPower(int RPM)
+        public double ReadPower(double RPM)
         {
-            int currentPower = 0;
-            StreamReader sRead = new StreamReader("C:/Users/autob/Source/Repos/PowerPlant/PowerPlant/Content/98SupraDyno.txt");
+            double currentPower = 0;
+            StreamReader sRead = new StreamReader("C:/Users/10KroczakJ.SCRCAT/source/repos/pPLant/PowerPlant/Content/98SupraDyno.txt");
             double roundRPM = Math.Round(RPM / 500.0) * 500;
 
             //Debug.WriteLine(roundRPM);
@@ -48,7 +56,7 @@ namespace PowerPlant
         public List<float> ReadPara()
         {
             List<float> carPars = new List<float>();
-            StreamReader sRead = new StreamReader("C:/Users/autob/Source/Repos/PowerPlant/PowerPlant/Content/98SupraParameters.txt");
+            StreamReader sRead = new StreamReader("C:/Users/10KroczakJ.SCRCAT/source/repos/pPLant/PowerPlant/Content/98SupraParameters.txt");
             do
             {
                 line = sRead.ReadLine();
@@ -61,18 +69,18 @@ namespace PowerPlant
 
             return carPars;
         }
-        public int Power(int RPM)
+        public double Power(double RPM)
         {
             string[] allPower = new string[10];
-            int powerAtRpm = 1;
+            double powerAtRpm = 1;
             powerAtRpm = ReadPower(RPM);
             //Debug.WriteLine(powerAtRpm);
             return powerAtRpm;
         }
-        public int RPMmod(int throttle,int fwWeight,int powerAtRpm,int revLimit,int idle,int transmissionLoad) 
+        public double RPMmod(double throttle,double fwWeight,double powerAtRpm,double revLimit,double idle,double transmissionLoad) 
         {
-            int maxRpmR = (powerAtRpm/12) * fwWeight;
-            int RPMrise = ((throttle)*powerAtRpm) / fwWeight;
+            double maxRpmR = (powerAtRpm/12) * fwWeight;
+            double RPMrise = ((throttle)*powerAtRpm) / fwWeight;
             if (RPMrise > maxRpmR) 
             {
                 RPMrise = maxRpmR;
@@ -96,7 +104,7 @@ namespace PowerPlant
                 MagicNum = 25;
             }
 
-            int RPMfall = (RPM / fwWeight)/MagicNum;
+            double RPMfall = (RPM / fwWeight)/MagicNum;
             //Debug.WriteLine("RPMRISE{0}", RPMrise);
 
             //Debug.WriteLine("throttle{0}", throttle);
@@ -127,24 +135,68 @@ namespace PowerPlant
             }
 
 
-            //Debug.WriteLine(RPM);
-                return RPM;
-        }
-        public int gearSelect()
-        {
-            List<float> carPars = ReadPara();
             
-          
-            Debug.WriteLine(MaxGear);
-            return MaxGear; 
+            return RPM;
         }
-        public float Transmission() 
+        public ratioDiff gearReader(int gear)
         {
 
-            return 1;
+            
+            List<float> carPars = ReadPara();
+            int count = 0;
+            for (int i = 0; i <= 9; i++) 
+            {
+                if (carPars[i+3] != 0)
+                {
+                    count = count + 1;
+                }
+
+            }
+            MaxGear = count;
+            //Debug.WriteLine(MaxGear);
+            if (gear > MaxGear && gear != 11) 
+            {
+                gear = MaxGear;
+            }
+            if (gear > 0)
+            {
+
+                thisRD.ratio = carPars[gear + 2];
+
+            }
+         
+                
+            thisRD.diff = carPars[14];
+            Debug.WriteLine(gear);
+            
+            return thisRD;
         }
-        public void DrawMessage(SpriteBatch spriteBatch,SpriteFont Font, int PARA,Vector2 pos)
+        public double Transmission(ratioDiff thisRD,double RPM)
         {
+            if (thisRD.ratio == 0)
+            {
+                RPM = 0;
+            }
+            else 
+            {
+                RPM = RPM / thisRD.ratio;
+            }
+           
+            Debug.WriteLine("trans: {0}",thisRD.ratio);
+
+            return RPM;
+        }
+        public double Differential(ratioDiff thisRD, double RPM)
+        { 
+            RPM = RPM / thisRD.diff;
+            Debug.WriteLine("diff: {0}",thisRD.diff);
+
+
+            return RPM;
+        }
+        public void DrawMessage(SpriteBatch spriteBatch,SpriteFont Font, string PARA,Vector2 pos)
+        {
+           
             spriteBatch.Begin(SpriteSortMode.Deferred,
             BlendState.AlphaBlend,
             SamplerState.PointClamp,

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System;
 
 namespace PowerPlant
 {
@@ -13,12 +14,17 @@ namespace PowerPlant
         private PowerPlant pPlant;
         private InputManager inputMan;
         private Sound soundMan;
-        private int RPM;
-        private int throttle;
-        private int cPower;
-        private int flywheelWeight;
-        private int revLimit;
-        private int idle;
+        private MFTire mf;
+        private ratioDiff thisRD;
+        private int gear;
+        private double RPM;
+        private double TransSpeed;
+        private double DiffSpeed;
+        private double throttle;
+        private double cPower;
+        private double flywheelWeight;
+        private double revLimit;
+        private double idle;
         private int millisecondsPerFrame = 1; //Update every 1 millisecond
         private double timeSinceLastUpdate = 0; //Accumulate the elapsed time
         //private AudioEngine AudioMan;
@@ -35,7 +41,8 @@ namespace PowerPlant
 
         protected override void Initialize()
         {
-           
+
+            thisRD = new ratioDiff();
             pPlant = new PowerPlant();
             List <float> carParameters = pPlant.ReadPara();
             flywheelWeight = (int)carParameters[0];
@@ -45,6 +52,8 @@ namespace PowerPlant
             inputMan = new InputManager();
 
             soundMan = new Sound();
+
+            mf = new MFTire();
 
             
             //AudioMan = new AudioEngine();
@@ -67,14 +76,19 @@ namespace PowerPlant
                 Exit();
             soundMan.sound();
 
+            mf.Initialize();
+            
+            thisRD = pPlant.gearReader(gear = inputMan.GearSelect(_graphics));
 
-            pPlant.gearSelect();
             timeSinceLastUpdate += gameTime.ElapsedGameTime.TotalMilliseconds;
             if (timeSinceLastUpdate >= millisecondsPerFrame)
             {
                 throttle = inputMan.Throttle(_graphics);
                 RPM = pPlant.RPMmod(throttle, flywheelWeight, cPower, revLimit, idle,1);
                 cPower = pPlant.Power(RPM);
+                TransSpeed = pPlant.Transmission(thisRD, RPM);
+                DiffSpeed = pPlant.Differential(thisRD, TransSpeed);
+
                 timeSinceLastUpdate = 0;
             }
 
@@ -86,12 +100,19 @@ namespace PowerPlant
         protected override void Draw(GameTime gameTime)
         {
             
-            GraphicsDevice.Clear(Color.LightGreen);
-            Vector2 PositionT = new Vector2(50, 50);
-            Vector2 PositionR = new Vector2(50, 100);
-            pPlant.DrawMessage(_spriteBatch,Font,throttle,PositionT);
-            pPlant.DrawMessage(_spriteBatch, Font,RPM , PositionR);
+            GraphicsDevice.Clear(Color.Black);
+            Vector2 PositionThrot = new Vector2(550, 50);
+            
+            Vector2 PositionRPM = new Vector2(50, 50);
+            Vector2 PositionG = new Vector2(50, 100);
 
+            Vector2 PositionTrans = new Vector2(50, 350);
+            Vector2 PositionDiff = new Vector2(50, 400);
+            pPlant.DrawMessage(_spriteBatch,Font, ("Throttle:" + throttle.ToString()),PositionThrot);
+            pPlant.DrawMessage(_spriteBatch, Font, "RPM:"+ Math.Round(RPM), PositionRPM);
+            pPlant.DrawMessage(_spriteBatch, Font, "Trans RPM:" + Math.Round(TransSpeed), PositionTrans);
+            pPlant.DrawMessage(_spriteBatch, Font, "Differential RPM:"+ Math.Round(DiffSpeed), PositionDiff);
+            pPlant.DrawMessage(_spriteBatch, Font,"Gear: "+ gear, PositionG);
 
 
 

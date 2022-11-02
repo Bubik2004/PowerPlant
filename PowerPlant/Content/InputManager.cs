@@ -14,7 +14,8 @@ namespace PowerPlant
         int steering = 0;
         float controller;
         int Gear;
-
+        PowerPlant pPlant;
+       
         public int Throttle(GraphicsDeviceManager inGraphics)
         {
             KeyboardState state;
@@ -25,15 +26,21 @@ namespace PowerPlant
             {
                 if (throttle < 100)
                 {
-                    throttle = throttle + 2;
+                    throttle = throttle + 4;
                 }
+                if (throttle >= 100) 
+                {
+                    throttle = 100;
+                }
+
+
                 
             }
             if (state.IsKeyDown(Keys.W) == false)
             {
                 if (throttle > 0)
                 {
-                    throttle = throttle -2;
+                    throttle = throttle -5;
                 }
                 if (throttle < 4) 
                 {
@@ -55,8 +62,9 @@ namespace PowerPlant
 
             return throttle;
         }
-        public int GearSelect(GraphicsDeviceManager inGraphics, List<float> carPars)
+        public int GearSelect(GraphicsDeviceManager inGraphics)
         {
+            pPlant = new PowerPlant();
             KeyboardState state;
 
             state = Keyboard.GetState();
@@ -106,7 +114,6 @@ namespace PowerPlant
             {
                 Gear = 11;
             }
-
             return Gear;
         }
         public int Steering(GraphicsDeviceManager inGraphics)
