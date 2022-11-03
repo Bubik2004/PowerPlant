@@ -74,7 +74,7 @@ namespace PowerPlant
             string[] allPower = new string[10];
             double powerAtRpm = 1;
             powerAtRpm = ReadPower(RPM);
-            //Debug.WriteLine(powerAtRpm);
+            //Debug.WriteLine("Power at this RPM" + powerAtRpm);
             return powerAtRpm;
         }
         public double RPMmod(double throttle,double fwWeight,double powerAtRpm,double revLimit,double idle,double transmissionLoad) 
@@ -167,11 +167,11 @@ namespace PowerPlant
          
                 
             thisRD.diff = carPars[14];
-            Debug.WriteLine(gear);
+            //Debug.WriteLine(gear);
             
             return thisRD;
         }
-        public double Transmission(ratioDiff thisRD,double RPM)
+        public double Transmission(ratioDiff thisRD,double RPM,double clutch)
         {
             if (thisRD.ratio == 0)
             {
@@ -179,17 +179,18 @@ namespace PowerPlant
             }
             else 
             {
-                RPM = RPM / thisRD.ratio;
+                RPM = (RPM / thisRD.ratio) * clutch/100;
+                //Debug.WriteLine("clutch: " + clutch / 100);
             }
            
-            Debug.WriteLine("trans: {0}",thisRD.ratio);
+            //Debug.WriteLine("trans: {0}",thisRD.ratio);
 
             return RPM;
         }
         public double Differential(ratioDiff thisRD, double RPM)
         { 
             RPM = RPM / thisRD.diff;
-            Debug.WriteLine("diff: {0}",thisRD.diff);
+            //Debug.WriteLine("diff: {0}",thisRD.diff);
 
 
             return RPM;

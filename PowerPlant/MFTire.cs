@@ -9,8 +9,8 @@ namespace PowerPlant
 {
     class MFTire
     {
-        int WAV = 50;
-        public void Initialize()
+        
+        public void Initialize(double WAV)
         {
             
             
@@ -19,7 +19,7 @@ namespace PowerPlant
             double K = tireTreadLongitudinalVelocity(WR, WAV,120) ;
             //Debug.WriteLine(WAV);
             double Fx = forceAtContactPoint(VL, 10, 1.9, 1, 0.97,K);
-            //Debug.WriteLine(Fx);
+            Debug.WriteLine("Force at contact point"+ Fx);
 
         }
         public double tireTreadLongitudinalVelocity(double WR, double WAV,double WHLV)

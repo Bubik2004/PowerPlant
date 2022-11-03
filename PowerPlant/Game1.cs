@@ -21,6 +21,7 @@ namespace PowerPlant
         private double TransSpeed;
         private double DiffSpeed;
         private double throttle;
+        private double clutch;
         private double cPower;
         private double flywheelWeight;
         private double revLimit;
@@ -76,7 +77,7 @@ namespace PowerPlant
                 Exit();
             soundMan.sound();
 
-            mf.Initialize();
+            
             
             thisRD = pPlant.gearReader(gear = inputMan.GearSelect(_graphics));
 
@@ -84,11 +85,12 @@ namespace PowerPlant
             if (timeSinceLastUpdate >= millisecondsPerFrame)
             {
                 throttle = inputMan.Throttle(_graphics);
+                clutch = inputMan.Clutch(_graphics);
                 RPM = pPlant.RPMmod(throttle, flywheelWeight, cPower, revLimit, idle,1);
                 cPower = pPlant.Power(RPM);
-                TransSpeed = pPlant.Transmission(thisRD, RPM);
+                TransSpeed = pPlant.Transmission(thisRD, RPM,clutch);
                 DiffSpeed = pPlant.Differential(thisRD, TransSpeed);
-
+                mf.Initialize(DiffSpeed * 0.10472);
                 timeSinceLastUpdate = 0;
             }
 
@@ -102,14 +104,19 @@ namespace PowerPlant
             
             GraphicsDevice.Clear(Color.Black);
             Vector2 PositionThrot = new Vector2(550, 50);
-            
+            Vector2 PositionClutch = new Vector2(550, 100);
+
             Vector2 PositionRPM = new Vector2(50, 50);
-            Vector2 PositionG = new Vector2(50, 100);
+            Vector2 PositionPower = new Vector2(50, 100);
+            Vector2 PositionG = new Vector2(50, 150);
 
             Vector2 PositionTrans = new Vector2(50, 350);
             Vector2 PositionDiff = new Vector2(50, 400);
+
             pPlant.DrawMessage(_spriteBatch,Font, ("Throttle:" + throttle.ToString()),PositionThrot);
+            pPlant.DrawMessage(_spriteBatch, Font, ("Clutch:" + clutch.ToString()), PositionClutch);
             pPlant.DrawMessage(_spriteBatch, Font, "RPM:"+ Math.Round(RPM), PositionRPM);
+            pPlant.DrawMessage(_spriteBatch, Font, ("Horsepower:" + cPower.ToString()), PositionPower);
             pPlant.DrawMessage(_spriteBatch, Font, "Trans RPM:" + Math.Round(TransSpeed), PositionTrans);
             pPlant.DrawMessage(_spriteBatch, Font, "Differential RPM:"+ Math.Round(DiffSpeed), PositionDiff);
             pPlant.DrawMessage(_spriteBatch, Font,"Gear: "+ gear, PositionG);

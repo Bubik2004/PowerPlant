@@ -12,8 +12,11 @@ namespace PowerPlant
     {
         int throttle = 0;
         int steering = 0;
-        float controller;
+        int clutch = 0;
+        int count = 0;
         int Gear;
+        float controller;
+       
         PowerPlant pPlant;
        
         public int Throttle(GraphicsDeviceManager inGraphics)
@@ -62,8 +65,45 @@ namespace PowerPlant
 
             return throttle;
         }
-        public int GearSelect(GraphicsDeviceManager inGraphics)
+        public int Clutch(GraphicsDeviceManager inGraphics)
         {
+            KeyboardState state;
+
+            state = Keyboard.GetState();
+
+            if (clutch < 100)
+            {
+
+                clutch = clutch + 2;
+
+            }
+            if (clutch > 100) 
+            {
+                clutch = 100;
+            }
+
+            else if (state.IsKeyDown(Keys.LeftControl))
+            {
+                if (clutch > 0) 
+                {
+                    clutch = clutch - 4;
+
+
+
+                }
+                if (clutch <= 0) 
+                {
+                    clutch = 0;
+                }
+
+
+
+            }
+            //Debug.WriteLine("clutch:" + clutch);
+            return clutch;
+        }
+            public int GearSelect(GraphicsDeviceManager inGraphics)
+            {
             pPlant = new PowerPlant();
             KeyboardState state;
 
@@ -113,6 +153,29 @@ namespace PowerPlant
             if (state.IsKeyDown(Keys.OemMinus))
             {
                 Gear = 11;
+            }
+            if (state.IsKeyDown(Keys.Up))
+            {
+                count = count + 1;
+                if (count == 10) 
+                {
+
+                    Gear = Gear + 1;
+
+                    count = 0;
+                }
+            }
+            
+            if (state.IsKeyDown(Keys.Left))
+            {
+                count = count +1;
+                if (count == 10)
+                {
+
+                    Gear = Gear - 1;
+
+                    count = 0;
+                }
             }
             return Gear;
         }
